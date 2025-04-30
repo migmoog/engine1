@@ -57,3 +57,8 @@ end
 function lerp(a, b, step)
     return a + ((b - a) * step)
 end
+
+-- waves a number around an offset
+function wave(x, a, c)
+    return a * math.sin(x * math.pi * 2) + c
+end

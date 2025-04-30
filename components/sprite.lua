@@ -10,14 +10,16 @@ function makeSprite(path, framec, scale)
 	end
 
 	return {
-		scl = scale,
+		scl = v2(scale),
+		off = v2(qw / 2, ih / 2),
 		frames = frames,
 		frm = 1,
 		draw = function(self, pos, angle)
 			love.graphics.draw(img, self.frames[self.frm],
 				pos.x, pos.y,
 				angle,
-				self.scl, self.scl, qw / 2, iw / 2)
+				self.scl.x, self.scl.y,
+				self.off.x, self.off.y)
 		end,
 	}
 end

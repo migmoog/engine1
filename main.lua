@@ -1,4 +1,9 @@
 function love.load()
+    -- lua modules are lowkey fucked
+    require 'components.body'
+    require 'components.sprite'
+    require 'components.timer'
+
     require 'entities.player'
     require 'entities.npc'
 

@@ -3,28 +3,38 @@ local function dir(dx, dy)
 end
 -- Frames are mapped to how they are in the spritesheet
 local Directions = {
-    BOTTOM_RIGHT = dir(1, 1),
-    BOTTOM_LEFT = dir(-1, 1),
-    TOP_LEFT = dir(-1, -1),
-    TOP_RIGHT = dir(1, -1),
-    TOP = dir(0, -1),
-    BOTTOM = dir(0, 1),
-    LEFT = dir(-1, 0),
-    RIGHT = dir(1, 0)
+    dir(1, 1),
+    dir(-1, 1),
+    dir(-1, -1),
+    dir(1, -1),
+    dir(0, -1),
+    dir(0, 1),
+    dir(-1, 0),
+    dir(1, 0)
 }
 
 local function makeNpc(x, y)
-    local npc = {
-        body = makeBody(x, y, 30),
-        sprite = makeSprite('images/man.png', 8, 0.38),
-        dir = love.math.random(1, 8),
-        update = function(self, dt)
-            self.sprite.frm = self.dir
-        end,
-        draw = function(self)
-            self.sprite:draw(self.body.pos, 0)
-        end
-    }
+    local anim_counter = 0
+    local s = makeSprite('images/man.png', 8, .38)
+    -- fix the offset
+    s.off.y = s.off.y * 2
+    local npc = {}
+    npc.body = makeBody(x, y, 30)
+    npc.sprite = s
+    npc.timer = makeTimer(1, function(ctx)
+        ctx.body.velocity = Directions[ctx.dir]:clone():mul(50)
+    end, npc)
+    npc.dir = love.math.random(1, 8)
+    npc.update = function(self, dt)
+        self.sprite.frm = self.dir
+        self.timer:update(dt)
+        self.body:move(dt)
+    end
+    npc.draw = function(self)
+        anim_counter = anim_counter + love.timer.getDelta()
+        self.sprite.scl.y = wave(anim_counter / 1.5, .1, .38)
+        self.sprite:draw(self.body.pos, 0)
+    end
 
     return npc
 end

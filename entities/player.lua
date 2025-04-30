@@ -1,6 +1,3 @@
-require("components.sprite")
-require("components.body")
-
 local w, h = love.graphics.getDimensions()
 player = {
 	sprite = makeSprite("images/player.png", 4, 0.38),
