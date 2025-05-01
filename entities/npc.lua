@@ -2,15 +2,41 @@ local function dir(dx, dy)
     return v2(dx, dy):normalize()
 end
 -- Frames are mapped to how they are in the spritesheet
-local Directions = {
-    dir(1, 1),
-    dir(-1, 1),
-    dir(-1, -1),
-    dir(1, -1),
-    dir(0, -1),
-    dir(0, 1),
-    dir(-1, 0),
-    dir(1, 0)
+local directions = {
+    dir(1, 1),   -- bottom right
+    dir(-1, 1),  -- bottom left
+    dir(-1, -1), -- top left
+    dir(1, -1),  -- top right
+    dir(0, -1),  -- top
+    dir(0, 1),   -- bottom
+    dir(-1, 0),  -- left
+    dir(1, 0)    -- right
+}
+
+-- states for npcs
+local states = {
+    born = function(self, dt)
+
+    end,
+
+    alive = function(self, dt)
+        self.sprite.frm = self.dir
+        self.stopTimer:update(dt)
+        self.moveTimer:update(dt)
+        self.body:move(dt)
+    end,
+
+    leaving = function(self, dt)
+
+    end,
+
+    gotMatch = function(self, dt)
+
+    end,
+
+    metMatch = function(self, dt)
+
+    end,
 }
 
 local function makeNpc(x, y)
@@ -21,18 +47,25 @@ local function makeNpc(x, y)
     local npc = {}
     npc.body = makeBody(x, y, 30)
     npc.sprite = s
-    npc.timer = makeTimer(1, function(ctx)
-        ctx.body.velocity = Directions[ctx.dir]:clone():mul(50)
+    npc.speed = love.math.random(85, 175)
+    npc.moveTimer = makeTimer(1, function(ctx)
+        ctx.body.velocity = directions[ctx.dir]:clone():mul(ctx.speed)
+        npc.stopTimer:start()
     end, npc)
     npc.dir = love.math.random(1, 8)
-    npc.update = function(self, dt)
-        self.sprite.frm = self.dir
-        self.timer:update(dt)
-        self.body:move(dt)
-    end
+    npc.moveTimer:start()
+    npc.update = states.alive
+
+    npc.stopTimer = makeTimer(randfRange(.8, 3), function(ctx)
+        ctx.body.velocity = v2(0, 0)
+
+        ctx.dir = love.math.random(1, 8)
+        ctx.moveTimer:start()
+    end, npc)
+
     npc.draw = function(self)
         anim_counter = anim_counter + love.timer.getDelta()
-        self.sprite.scl.y = wave(anim_counter / 1.5, .1, .38)
+        self.sprite.scl.y = wave(anim_counter / 1.5, .07, .38)
         self.sprite:draw(self.body.pos, 0)
     end
 

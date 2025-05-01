@@ -9,6 +9,12 @@ function v2(x, y)
             self.y = self.y + other.y
             return self
         end,
+        -- subtract a v2 from another v2
+        sub = function(self, other)
+            self.x = self.x - other.x
+            self.y = self.y - other.y
+            return self
+        end,
         -- scale a v2 by another v2
         mul = function(self, scale)
             self.x = self.x * scale
@@ -39,13 +45,20 @@ function v2(x, y)
         normalize = function(self)
             local len = self:len()
             return self:div(len)
-        end
+        end,
     }
 end
 
+-- random vector2 generation
 function randomScreenPos()
     local w, h = love.graphics.getDimensions()
     return v2(love.math.random(0, w), love.math.random(0, h))
+end
+
+-- get center coordinates of the world
+function centerPos()
+    local w, h = love.graphics.getDimensions()
+    return v2(w / 2, h / 2)
 end
 
 -- booleans to integers
@@ -61,4 +74,8 @@ end
 -- waves a number around an offset
 function wave(x, a, c)
     return a * math.sin(x * math.pi * 2) + c
+end
+
+function randfRange(min, max)
+    return min + math.random() * (max - min)
 end
