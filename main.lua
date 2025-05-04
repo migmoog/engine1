@@ -1,3 +1,5 @@
+math.randomseed(love.timer.getDelta())
+
 function love.load()
     -- lua modules are lowkey fucked
     require 'components.body'

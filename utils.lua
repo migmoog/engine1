@@ -9,37 +9,48 @@ function v2(x, y)
             self.y = self.y + other.y
             return self
         end,
+
         -- subtract a v2 from another v2
         sub = function(self, other)
             self.x = self.x - other.x
             self.y = self.y - other.y
             return self
         end,
+
         -- scale a v2 by another v2
         mul = function(self, scale)
             self.x = self.x * scale
             self.y = self.y * scale
             return self
         end,
+
         -- divide a v2
         div = function(self, denom)
             self.x = self.x / denom
             self.y = self.y / denom
             return self
         end,
+
         -- lerp to a v2
         lerp = function(self, other, step)
             self.x = lerp(self.x, other.x, step)
             self.y = lerp(self.y, other.y, step)
             return self
         end,
+
         -- clone a v2
         clone = function(self)
             return v2(self.x, self.y)
         end,
+
         -- length of a v2
         len = function(self)
             return math.sqrt(self.x * self.x + self.y * self.y)
+        end,
+
+        -- gets the distance from one point/v2 to another
+        distanceTo = function(self, other)
+            return other:clone():sub(self):len()
         end,
         -- normalize this vector
         normalize = function(self)

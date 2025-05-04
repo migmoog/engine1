@@ -7,7 +7,8 @@ player = {
 
 local p = love.keyboard.isDown
 function player:update(dt)
-	local input = v2(btoi(p("d", "right")) - btoi(p("a", "left")), btoi(p("s", "down")) - btoi(p("w", "up")))
+	local input = v2(btoi(p("d", "right")) - btoi(p("a", "left")),
+		btoi(p("s", "down")) - btoi(p("w", "up")))
 	if input.x < 0 then
 		self.sprite.frm = 4
 	elseif input.x > 0 then
@@ -32,7 +33,7 @@ function player:update(dt)
 		step = 0.08
 	end
 
-	self.body.velocity:lerp(input:mul(270), step)
+	self.body.velocity:lerp(input:clone():mul(270), step)
 	self.body:move(dt)
 end
 
