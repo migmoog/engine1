@@ -6,10 +6,12 @@ function makeTimer(seconds, callback, context)
         update = function(self, dt) -- you *could* try using love.thread but that's a little advanced
             if self.time_left > 0 then
                 self.time_left = self.time_left - dt
+                return true
             elseif self.time_left ~= -1 then
                 self.time_left = -1
                 self.callback(context)
             end
+            return false
         end,
 
         -- begins the timer

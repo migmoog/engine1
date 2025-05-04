@@ -12,12 +12,18 @@ local directions = {
     dir(-1, 0),  -- left
     dir(1, 0)    -- right
 }
-function directions:get(dir)
-    return self[dir]:clone()
+function directions:get(d)
+    return self[d]:clone()
 end
 
-function directions:bounce()
+function directions:indexOf(vec)
+    for i, v in ipairs(self) do
+        if v == vec then
+            return i
+        end
+    end
 
+    return -1
 end
 
 local colors = {
@@ -30,13 +36,17 @@ local colors = {
 local center = centerPos()
 local function makeNpc(x, y)
     local anim_counter = 0
-    local s = makeSprite('images/man.png', 8, .38)
     -- fix the offset
-    s.off.y = s.off.y * 2
-    local npc = {}
-    npc.body = makeBody(x, y, 30)
-    npc.sprite = s
-    npc.speed = love.math.random(85, 175)
+    local npc = {
+        body = makeBody(x, y, 30),
+        sprite = makeSprite('images/man.png', 8, .38),
+        speed = love.math.random(85, 175),
+        matched = false,
+        clr = love.math.random(1, 3)
+    }
+    npc.sprite.off.y = npc.sprite.off.y * 2
+
+    -- sets the var and maps a corresponding velocity
     function npc:setDir(d)
         self.dir = d
         self.body.velocity = directions:get(self.dir):mul(self.speed)
@@ -44,21 +54,37 @@ local function makeNpc(x, y)
 
     npc:setDir(love.math.random(1, 8))
 
+    -- walks onto the screen until it goes to dawdle mode
     function npc:born(dt)
-        self.sprite.frm = self.dir
         self.body:move(dt)
 
         if self.body.pos:distanceTo(center) < 280 then
             self.body.velocity = v2(0, 0)
             self.moveTimer:start()
+            self.leaveTimer:start()
             self.update = self.alive
         end
     end
 
+    -- dawdling state
     function npc:alive(dt)
-        self.sprite.frm = self.dir
-        self.stopTimer:update(dt)
-        self.moveTimer:update(dt)
+        if self.leaveTimer:update(dt) then
+            self.stopTimer:update(dt)
+            self.moveTimer:update(dt)
+        end
+
+        if self.body.pos.x > 720 or self.body.pos.x < 0 then
+            self.body.velocity.x = -self.body.velocity.x
+            self.dir = directions:indexOf(self.body.velocity:signs())
+        elseif self.body.pos.y > 720 or self.body.pos.y < 0 then
+            self.body.velocity.y = -self.body.velocity.y
+            self.dir = directions:indexOf(self.body.velocity:signs())
+        end
+        self.body:move(dt)
+    end
+
+    -- time is up and leaving the screen
+    function npc:leave(dt)
         self.body:move(dt)
     end
 
@@ -67,7 +93,6 @@ local function makeNpc(x, y)
         ctx:setDir(ctx.dir)
         npc.stopTimer:start()
     end, npc)
-    npc.clr = love.math.random(1, 3)
     npc.update = npc.born
 
     -- stops the guy as it moves
@@ -78,7 +103,18 @@ local function makeNpc(x, y)
         ctx.moveTimer:start()
     end, npc)
 
+    -- makes the damn thing leave
+    npc.leaveTimer = makeTimer(randfRange(5, 10), function(ctx)
+        if not ctx.matched then
+            local perps = { 5, 6, 7, 8 }
+            local d = perps[love.math.random(1, 4)]
+            ctx:setDir(d)
+            ctx.update = ctx.leave
+        end
+    end, npc)
+
     npc.draw = function(self)
+        self.sprite.frm = self.dir
         love.graphics.setColor(colors[self.clr])
 
         anim_counter = anim_counter + love.timer.getDelta()

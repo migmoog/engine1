@@ -57,6 +57,16 @@ function v2(x, y)
             local len = self:len()
             return self:div(len)
         end,
+
+        -- get signs
+        signs = function(self)
+            return v2(sign(self.x), sign(self.y))
+        end,
+
+        -- compare
+        eq = function(self, other)
+            return self.x == other.x and self.y == other.y
+        end,
     }
 end
 
@@ -89,4 +99,8 @@ end
 
 function randfRange(min, max)
     return min + math.random() * (max - min)
+end
+
+function sign(n)
+    return n < 0 and -1 or n > 0 and 1 or 0
 end

@@ -18,6 +18,6 @@ function love.update(dt)
 end
 
 function love.draw()
-    player:draw()
     npcs:draw()
+    player:draw()
 end
