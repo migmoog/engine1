@@ -18,7 +18,7 @@ end
 
 function directions:indexOf(vec)
     for i, v in ipairs(self) do
-        if v == vec then
+        if v.eq(vec) then
             return i
         end
     end
@@ -39,7 +39,7 @@ local function makeNpc(x, y)
     -- fix the offset
     local npc = {
         body = makeBody(x, y, 30),
-        sprite = makeSprite('images/man.png', 8, .38),
+        sprite = makeSprite('images/man.png', 8, 1),
         speed = love.math.random(85, 175),
         matched = false,
         clr = love.math.random(1, 3)
@@ -80,6 +80,7 @@ local function makeNpc(x, y)
             self.body.velocity.y = -self.body.velocity.y
             self.dir = directions:indexOf(self.body.velocity:signs())
         end
+
         self.body:move(dt)
     end
 
@@ -118,7 +119,7 @@ local function makeNpc(x, y)
         love.graphics.setColor(colors[self.clr])
 
         anim_counter = anim_counter + love.timer.getDelta()
-        self.sprite.scl.y = wave(anim_counter / 1.5, .07, .38)
+        self.sprite.scl.y = wave(anim_counter / 1.5, .1, 0.85)
         self.sprite:draw(self.body.pos, 0)
 
         love.graphics.setColor({ 1, 1, 1, 1 })
