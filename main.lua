@@ -12,12 +12,6 @@ function love.load()
     npcs.spawnTimer:start()
 end
 
-function love.keypressed(key, _scancode, _isrepeat)
-    if not player.heart.active and key == 'space' then
-        player:placeHeart()
-    end
-end
-
 function love.update(dt)
     player:update(dt)
     npcs:update(dt)

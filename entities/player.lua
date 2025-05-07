@@ -4,11 +4,18 @@ local heart = {
 	body = makeBody(center.x, center.y, 8),
 	sprite = makeSprite('images/grossheart.png', 1, 1),
 	active = false,
+	addScl = v2(0, 0)
 }
 local anim_counter = 0
 function heart:activate(vec)
 	self.active = true
 	self.body.pos = vec
+	local w, _ = self.sprite:getDimensions()
+	self.body.rad = w
+end
+
+function heart:deactivate()
+	self.active = false
 end
 
 function heart:update(dt)
@@ -16,15 +23,21 @@ function heart:update(dt)
 		return
 	end
 	anim_counter = anim_counter + dt
-	self.sprite.scl.x = wave(anim_counter / 1.5, .1, 0.82)
-	self.sprite.scl.y = wave(anim_counter / .75, .2, 0.7)
+
+	-- map scale to the heart's radius
+	local w, h = self.sprite:getDimensions()
+	self.sprite.scl.x = wave(anim_counter / 1.5, .1, 1 + self.body.rad / w)
+	self.sprite.scl.y = wave(anim_counter / .75, .2, 1 + self.body.rad / w)
 end
 
 function heart:draw()
 	if not self.active then
 		return
 	end
+
+	love.graphics.setColor(1, 1, 1, 0.55)
 	self.sprite:draw(self.body.pos, 0)
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 -- The actual lovebug
@@ -64,9 +77,20 @@ function player:update(dt)
 		or
 		0.08
 
-	self.body.velocity:lerp(input:clone():mul(270), step)
+	self.body.velocity:lerp(input * 270, step)
 	self.body:move(dt)
 
+
+	if p('space') then
+		if not self.heart.active then
+			self:placeHeart()
+		else
+			local dist = self.heart.body.pos:distanceTo(self.body.pos)
+			self.heart.body.rad = dist
+		end
+	elseif self.heart.active then
+		self.heart:deactivate()
+	end
 	self.heart:update(dt)
 end
 

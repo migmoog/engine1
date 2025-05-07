@@ -21,5 +21,9 @@ function makeSprite(path, framec, scale)
 				self.scl.x, self.scl.y,
 				self.off.x, self.off.y)
 		end,
+		getDimensions = function(self)
+			local _x, _y, w, h = self.frames[self.frm]:getViewport()
+			return w, h
+		end
 	}
 end

@@ -14,7 +14,8 @@
             "args": [
                 ".",
                 "debug"
-            ]
+            ],
+            "console": "integratedTerminal"
         },
         {
             "name": "Debug Custom Lua Environment",

@@ -1,36 +1,28 @@
+-- metatable magic :-D
+local vector2MT = {
+    __eq = function(a, b)
+        return a.x == b.x and a.y == b.y
+    end,
+    -- add a v2 to another v2
+    __add = function(a, b)
+        return v2(a.x + b.x, a.y + b.y)
+    end,
+    __sub = function(a, b)
+        return v2(a.x - b.x, a.y - b.y)
+    end,
+    __mul = function(a, b)
+        return v2(a.x * b, a.y * b)
+    end,
+    __div = function(a, b)
+        return v2(a.x / b, a.y / b)
+    end,
+}
+
 -- vector2 object. You will never go without these in a 2D game
 function v2(x, y)
-    return {
+    local out = {
         x = x,
         y = y,
-        -- add a v2 to another v2
-        add = function(self, other)
-            self.x = self.x + other.x
-            self.y = self.y + other.y
-            return self
-        end,
-
-        -- subtract a v2 from another v2
-        sub = function(self, other)
-            self.x = self.x - other.x
-            self.y = self.y - other.y
-            return self
-        end,
-
-        -- scale a v2 by another v2
-        mul = function(self, scale)
-            self.x = self.x * scale
-            self.y = self.y * scale
-            return self
-        end,
-
-        -- divide a v2
-        div = function(self, denom)
-            self.x = self.x / denom
-            self.y = self.y / denom
-            return self
-        end,
-
         -- lerp to a v2
         lerp = function(self, other, step)
             self.x = lerp(self.x, other.x, step)
@@ -50,24 +42,28 @@ function v2(x, y)
 
         -- gets the distance from one point/v2 to another
         distanceTo = function(self, other)
-            return other:clone():sub(self):len()
+            return math.sqrt((self.x - other.x) ^ 2 + (self.y - other.y) ^ 2)
         end,
+
+        -- get the angle between two v2s
+        angleTo = function(self, other)
+            return math.atan2(other.y - self.y, other.x - self.x)
+        end,
+
         -- normalize this vector
         normalize = function(self)
             local len = self:len()
-            return self:div(len)
+            return self / len
         end,
 
         -- get signs
         signs = function(self)
             return v2(sign(self.x), sign(self.y))
         end,
-
-        -- compare
-        eq = function(self, other)
-            return self.x == other.x and self.y == other.y
-        end,
     }
+
+    setmetatable(out, vector2MT)
+    return out
 end
 
 -- random vector2 generation
@@ -97,10 +93,12 @@ function wave(x, a, c)
     return a * math.sin(x * math.pi * 2) + c
 end
 
+-- gets a float within a range, make sure you seed it though.
 function randfRange(min, max)
     return min + math.random() * (max - min)
 end
 
+-- gets the sign of the provided number
 function sign(n)
-    return n < 0 and -1 or n > 0 and 1 or 0
+    return n == 0 and 0 or n / math.abs(n)
 end

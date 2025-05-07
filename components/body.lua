@@ -5,7 +5,11 @@ function makeBody(x, y, radius)
         rad = radius,
         velocity = v2(0, 0),
         move = function(self, dt)
-            self.pos:add(self.velocity:clone():mul(dt))
+            self.pos = self.pos + self.velocity * dt
+        end,
+        -- checks if a body overlaps with another
+        overlaps = function(self, other)
+            return self.pos:distanceTo(other.pos) < self.rad
         end,
     }
 end

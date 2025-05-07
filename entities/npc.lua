@@ -1,24 +1,21 @@
-local function dir(dx, dy)
-    return v2(dx, dy):normalize()
-end
 -- Frames are mapped to how they are in the spritesheet
 local directions = {
-    dir(1, 1),   -- bottom right
-    dir(-1, 1),  -- bottom left
-    dir(-1, -1), -- top left
-    dir(1, -1),  -- top right
-    dir(0, -1),  -- top
-    dir(0, 1),   -- bottom
-    dir(-1, 0),  -- left
-    dir(1, 0)    -- right
+    v2(1, 1),   -- bottom right
+    v2(-1, 1),  -- bottom left
+    v2(-1, -1), -- top left
+    v2(1, -1),  -- top right
+    v2(0, -1),  -- top
+    v2(0, 1),   -- bottom
+    v2(-1, 0),  -- left
+    v2(1, 0)    -- right
 }
 function directions:get(d)
-    return self[d]:clone()
+    return self[d]:normalize()
 end
 
 function directions:indexOf(vec)
     for i, v in ipairs(self) do
-        if v.eq(vec) then
+        if v == vec then
             return i
         end
     end
@@ -49,7 +46,7 @@ local function makeNpc(x, y)
     -- sets the var and maps a corresponding velocity
     function npc:setDir(d)
         self.dir = d
-        self.body.velocity = directions:get(self.dir):mul(self.speed)
+        self.body.velocity = directions:get(self.dir) * self.speed
     end
 
     npc:setDir(love.math.random(1, 8))
@@ -73,12 +70,12 @@ local function makeNpc(x, y)
             self.moveTimer:update(dt)
         end
 
-        if self.body.pos.x > 720 or self.body.pos.x < 0 then
-            self.body.velocity.x = -self.body.velocity.x
-            self.dir = directions:indexOf(self.body.velocity:signs())
-        elseif self.body.pos.y > 720 or self.body.pos.y < 0 then
-            self.body.velocity.y = -self.body.velocity.y
-            self.dir = directions:indexOf(self.body.velocity:signs())
+        for _, axis in ipairs({ "x", "y" }) do
+            if self.body.pos[axis] > 720 or self.body.pos[axis] < 0 then
+                self.body.velocity[axis] = -self.body.velocity[axis]
+                self.dir = directions:indexOf(self.body.velocity:signs())
+                assert(self.dir ~= -1, "Invalid direction")
+            end
         end
 
         self.body:move(dt)
