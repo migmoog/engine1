@@ -111,13 +111,15 @@ local function makeNpc(x, y)
         end
     end, npc)
 
+    local _, h = npc.sprite:getDimensions()
+    local drawOffset = v2(0, h * .45)
     npc.draw = function(self)
         self.sprite.frm = self.dir
         love.graphics.setColor(colors[self.clr])
 
         anim_counter = anim_counter + love.timer.getDelta()
         self.sprite.scl.y = wave(anim_counter / 1.5, .1, 0.85)
-        self.sprite:draw(self.body.pos, 0)
+        self.sprite:draw(self.body.pos + drawOffset, 0)
 
         love.graphics.setColor({ 1, 1, 1, 1 })
     end

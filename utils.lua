@@ -47,7 +47,7 @@ function v2(x, y)
 
         -- get the angle between two v2s
         angleTo = function(self, other)
-            return math.atan2(other.y - self.y, other.x - self.x)
+            return math.atan(other.y - self.y, other.x - self.x)
         end,
 
         -- normalize this vector

@@ -15,17 +15,18 @@
                 ".",
                 "debug"
             ],
-            "console": "integratedTerminal"
         },
         {
-            "name": "Debug Custom Lua Environment",
+            "name": "Debug With Draw Bodies",
             "type": "lua-local",
             "request": "launch",
             "program": {
                 "command": "love"
             },
             "args": [
-                "."
+                ".",
+                "debug",
+                "drawBodies"
             ]
         }
     ]

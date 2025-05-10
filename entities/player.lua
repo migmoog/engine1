@@ -4,14 +4,13 @@ local heart = {
 	body = makeBody(center.x, center.y, 8),
 	sprite = makeSprite('images/grossheart.png', 1, 1),
 	active = false,
-	addScl = v2(0, 0)
 }
 local anim_counter = 0
+local w, h = heart.sprite:getDimensions()
+local diagonal = math.sqrt(w * w + h * h)
 function heart:activate(vec)
 	self.active = true
 	self.body.pos = vec
-	local w, _ = self.sprite:getDimensions()
-	self.body.rad = w
 end
 
 function heart:deactivate()
@@ -24,10 +23,10 @@ function heart:update(dt)
 	end
 	anim_counter = anim_counter + dt
 
-	-- map scale to the heart's radius
-	local w, h = self.sprite:getDimensions()
-	self.sprite.scl.x = wave(anim_counter / 1.5, .1, 1 + self.body.rad / w)
-	self.sprite.scl.y = wave(anim_counter / .75, .2, 1 + self.body.rad / w)
+	-- map scale to the heart's radius, then add a lil wobble
+	local step = anim_counter / 1.5
+	self.sprite.scl = (v2(1, 1) * ((2.5 * self.body.rad) / diagonal)) +
+		v2(wave(step, .25, 0), wave(step, .20, 0))
 end
 
 function heart:draw()
@@ -45,7 +44,8 @@ player = {
 	sprite = makeSprite("images/player.png", 4, 1),
 	body = makeBody(center.x, center.y, 10),
 	angle = 0,
-	heart = heart
+	heart = heart,
+	maxRad = love.graphics.getWidth() / 5,
 }
 
 function player:placeHeart()
@@ -81,16 +81,39 @@ function player:update(dt)
 	self.body:move(dt)
 
 
+	-- using the heart
 	if p('space') then
 		if not self.heart.active then
 			self:placeHeart()
 		else
 			local dist = self.heart.body.pos:distanceTo(self.body.pos)
-			self.heart.body.rad = dist
+			-- self.heart.body.rad = dist
+			if dist > self.maxRad then
+				self.heart.body.rad = self.maxRad
+				-- clamp the player to the max radius
+				self.body.pos = self.heart.body.pos +
+					(self.body.pos - self.heart.body.pos):normalize() * self.maxRad
+			else
+				self.heart.body.rad = dist
+			end
 		end
 	elseif self.heart.active then
 		self.heart:deactivate()
 	end
+
+	--bound the player to the confines of the screeen
+	local w, h = love.graphics.getDimensions()
+	if self.body.pos.x < 0 then
+		self.body.pos.x = 0
+	elseif self.body.pos.x > w then
+		self.body.pos.x = w
+	end
+	if self.body.pos.y < 0 then
+		self.body.pos.y = 0
+	elseif self.body.pos.y > h then
+		self.body.pos.y = h
+	end
+
 	self.heart:update(dt)
 end
 

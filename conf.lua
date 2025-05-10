@@ -5,6 +5,11 @@ require 'utils'
 -- IDEA: Maybe hide in other file? (You can do that in lua)
 if arg[2] == "debug" then
     require('lldebugger').start()
+    inDebug = true
+end
+
+if inDebug and arg[3] == "drawBodies" then
+    drawBodies = true
 end
 
 local eh = love.errorhandler

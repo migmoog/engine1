@@ -20,4 +20,10 @@ end
 function love.draw()
     npcs:draw()
     player:draw()
+
+    if inDebug and drawBodies then
+        for _, b in pairs(allBodies) do
+            b:draw()
+        end
+    end
 end
