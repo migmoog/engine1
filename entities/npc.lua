@@ -23,12 +23,6 @@ function directions:indexOf(vec)
     return -1
 end
 
-local colors = {
-    { 1, 0, 0, 1 }, -- red
-    { 0, 1, 0, 1 }, -- green
-    { 0, 0, 1, 1 }  -- blue
-}
-
 -- states for npcs
 local center = centerPos()
 local function makeNpc(x, y)
@@ -115,7 +109,7 @@ local function makeNpc(x, y)
     local drawOffset = v2(0, h * .45)
     npc.draw = function(self)
         self.sprite.frm = self.dir
-        love.graphics.setColor(colors[self.clr])
+        love.graphics.setColor(Colors[self.clr])
 
         anim_counter = anim_counter + love.timer.getDelta()
         self.sprite.scl.y = wave(anim_counter / 1.5, .1, 0.85)
@@ -161,6 +155,14 @@ function npcs:make(x, y)
     local n = makeNpc(x, y)
     table.insert(self.pool, n)
     return n
+end
+
+function npcs:setup()
+    -- set up an inital pool of npcs at random positions within the bounds
+    for i = 1, 10 do
+        local p = randomScreenPos()
+        self:make(p.x, p.y)
+    end
 end
 
 function npcs:update(dt)

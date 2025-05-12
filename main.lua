@@ -9,6 +9,7 @@ function love.load()
     require 'entities.player'
     require 'entities.npc'
 
+    npcs:setup()
     npcs.spawnTimer:start()
 end
 

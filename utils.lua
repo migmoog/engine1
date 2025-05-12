@@ -1,3 +1,8 @@
+Colors = {
+    { 1, 0, 0, 1 }, -- red
+    { 0, 1, 0, 1 }, -- green
+    { 0, 0, 1, 1 }  -- blue
+}
 -- metatable magic :-D
 local vector2MT = {
     __eq = function(a, b)
@@ -84,6 +89,7 @@ function btoi(b)
 end
 
 -- linear interpolation
+
 function lerp(a, b, step)
     return a + ((b - a) * step)
 end

@@ -1,3 +1,32 @@
+-- match with text + icons
+local matchInfo = {
+	textImg = makeSprite("images/matchwith.png", 1, 1),
+	icons = {
+		makeSprite("images/icon.png", 1, 1),
+		makeSprite("images/icon.png", 1, 1)
+	},
+	leftColor = Colors[1],
+	rightColor = Colors[2],
+}
+function matchInfo:draw()
+	local cp = centerPos()
+	cp.y = self.textImg.off.y
+	self.textImg:draw(cp, 0)
+
+	local leftEdge = cp.x - self.textImg.off.x
+
+	-- draw the icons with their corresponding colors
+	love.graphics.setColor(self.leftColor)
+	local iconLeft = v2(leftEdge + 275, self.textImg.off.y)
+	self.icons[1]:draw(iconLeft, 0)
+
+	love.graphics.setColor(self.rightColor)
+	local iconRight = v2(cp.x + self.textImg.off.x + 25, self.textImg.off.y)
+	self.icons[2]:draw(iconRight, 0)
+
+	love.graphics.setColor(1, 1, 1)
+end
+
 local center = centerPos()
 -- Heart chain
 local heart = {
@@ -5,7 +34,7 @@ local heart = {
 	sprite = makeSprite('images/grossheart.png', 1, 1),
 	active = false,
 }
-local anim_counter = 0
+local animTime = 0
 local w, h = heart.sprite:getDimensions()
 local diagonal = math.sqrt(w * w + h * h)
 function heart:activate(vec)
@@ -21,10 +50,10 @@ function heart:update(dt)
 	if not self.active then
 		return
 	end
-	anim_counter = anim_counter + dt
+	animTime = animTime + dt
 
 	-- map scale to the heart's radius, then add a lil wobble
-	local step = anim_counter / 1.5
+	local step = animTime / 1.5
 	self.sprite.scl = (v2(1, 1) * ((2.5 * self.body.rad) / diagonal)) +
 		v2(wave(step, .25, 0), wave(step, .20, 0))
 end
@@ -45,6 +74,7 @@ player = {
 	body = makeBody(center.x, center.y, 10),
 	angle = 0,
 	heart = heart,
+	matchInfo = matchInfo,
 	maxRad = love.graphics.getWidth() / 5,
 }
 
@@ -120,4 +150,5 @@ end
 function player:draw()
 	self.heart:draw()
 	self.sprite:draw(self.body.pos, self.angle)
+	self.matchInfo:draw()
 end
