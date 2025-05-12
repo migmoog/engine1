@@ -65,6 +65,12 @@ function v2(x, y)
         signs = function(self)
             return v2(sign(self.x), sign(self.y))
         end,
+
+        -- check if this vector is on screen
+        isOnScreen = function(self)
+            local w, h = love.graphics.getDimensions()
+            return self.x >= 0 and self.x <= w and self.y >= 0 and self.y <= h
+        end,
     }
 
     setmetatable(out, vector2MT)

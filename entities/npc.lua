@@ -85,7 +85,12 @@ local function makeNpc(x, y)
         ctx:setDir(ctx.dir)
         npc.stopTimer:start()
     end, npc)
-    npc.update = npc.born
+
+    if not v2(x, y):isOnScreen() then
+        npc.update = npc.born
+    else
+        npc.update = npc.alive
+    end
 
     -- stops the guy as it moves
     npc.stopTimer = makeTimer(randfRange(.8, 3), function(ctx)

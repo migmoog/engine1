@@ -60,6 +60,7 @@ end
 
 function heart:draw()
 	if not self.active then
+		self.body.rad = 0
 		return
 	end
 
