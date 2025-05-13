@@ -5,8 +5,8 @@ local matchInfo = {
 		makeSprite("images/icon.png", 1, 1),
 		makeSprite("images/icon.png", 1, 1)
 	},
-	leftColor = Colors[1],
-	rightColor = Colors[2],
+	leftColor = 1,
+	rightColor = 2,
 }
 function matchInfo:draw()
 	local cp = centerPos()
@@ -16,15 +16,24 @@ function matchInfo:draw()
 	local leftEdge = cp.x - self.textImg.off.x
 
 	-- draw the icons with their corresponding colors
-	love.graphics.setColor(self.leftColor)
+	love.graphics.setColor(Colors[self.leftColor])
 	local iconLeft = v2(leftEdge + 275, self.textImg.off.y)
 	self.icons[1]:draw(iconLeft, 0)
 
-	love.graphics.setColor(self.rightColor)
+	love.graphics.setColor(Colors[self.rightColor])
 	local iconRight = v2(cp.x + self.textImg.off.x + 25, self.textImg.off.y)
 	self.icons[2]:draw(iconRight, 0)
 
 	love.graphics.setColor(1, 1, 1)
+end
+
+-- randomly picks two new colors
+function matchInfo:reset()
+	self.leftColor = love.math.random(1, #Colors)
+	self.rightColor = love.math.random(1, #Colors)
+	while self.leftColor == self.rightColor do
+		self.rightColor = love.math.random(1, #Colors)
+	end
 end
 
 local center = centerPos()
@@ -42,8 +51,32 @@ function heart:activate(vec)
 	self.body.pos = vec
 end
 
-function heart:deactivate()
+function heart:deactivate(matchInfo, overlaps)
 	self.active = false
+	if #overlaps <= 1 then
+		return
+	end
+
+	local matches = {
+		[matchInfo.leftColor] = {},
+		[matchInfo.rightColor] = {},
+	}
+	for _, n in pairs(overlaps) do
+		if matches[n.clr] then
+			table.insert(matches[n.clr], n)
+		else
+			matchInfo:reset()
+			return
+		end
+	end
+
+	local matchCount = math.min(#matches[matchInfo.leftColor],
+		#matches[matchInfo.rightColor])
+	for i = 1, matchCount do
+		local left = table.remove(matches[matchInfo.leftColor])
+		local right = table.remove(matches[matchInfo.rightColor])
+		left:fallInLove(right)
+	end
 end
 
 function heart:update(dt)
@@ -129,10 +162,12 @@ function player:update(dt)
 			end
 		end
 	elseif self.heart.active then
-		self.heart:deactivate()
+		-- iterate through npcs to find any overlaps
+		local overlaps = npcs:findOverlaps(self.heart.body)
+		self.heart:deactivate(self.matchInfo, overlaps)
 	end
 
-	--bound the player to the confines of the screeen
+
 	local w, h = love.graphics.getDimensions()
 	if self.body.pos.x < 0 then
 		self.body.pos.x = 0

@@ -45,6 +45,20 @@ local function makeNpc(x, y)
 
     npc:setDir(love.math.random(1, 8))
 
+    function npc:fallInLove(other)
+        local midPoint = (self.body.pos + other.body.pos) / 2
+        self.body.pos = midPoint
+        other.body.pos = midPoint
+        print("Falling in love")
+        local function flyAway(self, dt)
+            -- fly away to the top of the screen
+            self.body.velocity = v2(0, -500)
+            self.body:move(dt)
+        end
+        self.update = flyAway
+        other.update = flyAway
+    end
+
     -- walks onto the screen until it goes to dawdle mode
     function npc:born(dt)
         self.body:move(dt)
@@ -175,6 +189,16 @@ function npcs:update(dt)
     for _, n in pairs(self.pool) do
         n:update(dt)
     end
+end
+
+function npcs:findOverlaps(body)
+    local overlaps = {}
+    for _, n in pairs(self.pool) do
+        if n.body:overlaps(body) then
+            table.insert(overlaps, n)
+        end
+    end
+    return overlaps
 end
 
 function npcs:draw()

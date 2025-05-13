@@ -14,7 +14,7 @@ function makeBody(x, y, radius)
         end,
         -- checks if a body overlaps with another
         overlaps = function(self, other)
-            return self.pos:distanceTo(other.pos) < self.rad
+            return self.pos:distanceTo(other.pos) < self.rad + other.rad
         end,
 
         -- draws the body as a circle
