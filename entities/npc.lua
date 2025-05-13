@@ -46,6 +46,8 @@ local function makeNpc(x, y)
     npc:setDir(love.math.random(1, 8))
 
     function npc:fallInLove(other)
+        self.matched = true
+        other.matched = true
         local midPoint = (self.body.pos + other.body.pos) / 2
         self.body.pos = midPoint
         other.body.pos = midPoint
@@ -91,7 +93,11 @@ local function makeNpc(x, y)
 
     -- time is up and leaving the screen
     function npc:leave(dt)
-        self.body:move(dt)
+        if self.body.pos:isOnScreen() then
+            self.body:move(dt)
+        else
+            self.matched = true
+        end
     end
 
     -- waits to begin movement for the npc
@@ -186,6 +192,14 @@ end
 
 function npcs:update(dt)
     self.spawnTimer:update(dt)
+    -- search for matched npcs and remove them from the pool
+    for i = #self.pool, 1, -1 do
+        local n = self.pool[i]
+        if n.matched then
+            table.remove(self.pool, i)
+        end
+    end
+
     for _, n in pairs(self.pool) do
         n:update(dt)
     end
