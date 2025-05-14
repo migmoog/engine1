@@ -1,5 +1,5 @@
 -- match with text + icons
-local matchInfo = {
+matchInfo = {
 	textImg = makeSprite("images/matchwith.png", 1, 1),
 	icons = {
 		makeSprite("images/icon.png", 1, 1),
@@ -186,5 +186,4 @@ end
 function player:draw()
 	self.heart:draw()
 	self.sprite:draw(self.body.pos, self.angle)
-	self.matchInfo:draw()
 end

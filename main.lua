@@ -8,9 +8,13 @@ function love.load()
 
     require 'entities.player'
     require 'entities.npc'
+    require 'entities.camera'
 
     npcs:setup()
     npcs.spawnTimer:start()
+
+    table.insert(camera.entities, player)
+    table.insert(camera.entities, npcs)
 end
 
 function love.update(dt)
@@ -19,12 +23,12 @@ function love.update(dt)
 end
 
 function love.draw()
-    npcs:draw()
-    player:draw()
-
+    camera:draw()
     if inDebug and drawBodies then
         for _, b in pairs(allBodies) do
             b:draw()
         end
     end
+
+    matchInfo:draw()
 end

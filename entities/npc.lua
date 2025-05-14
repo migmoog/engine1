@@ -46,12 +46,11 @@ local function makeNpc(x, y)
     npc:setDir(love.math.random(1, 8))
 
     function npc:fallInLove(other)
-        self.matched = true
-        other.matched = true
+        self.matched, other.matched = true, true
+
         local midPoint = (self.body.pos + other.body.pos) / 2
-        self.body.pos = midPoint
-        other.body.pos = midPoint
-        print("Falling in love")
+        self.body.pos, other.body.pos = midPoint, midPoint
+
         local function flyAway(self, dt)
             -- fly away to the top of the screen
             self.body.velocity = v2(0, -500)
@@ -84,6 +83,7 @@ local function makeNpc(x, y)
             if self.body.pos[axis] > 720 or self.body.pos[axis] < 0 then
                 self.body.velocity[axis] = -self.body.velocity[axis]
                 self.dir = directions:indexOf(self.body.velocity:signs())
+                self.body.pos = self.body.pos + directions:get(self.dir)
                 assert(self.dir ~= -1, "Invalid direction")
             end
         end
