@@ -57,26 +57,30 @@ function heart:deactivate(matchInfo, overlaps)
 		return
 	end
 
+	camera:zoomOut()
+
 	local matches = {
 		[matchInfo.leftColor] = {},
 		[matchInfo.rightColor] = {},
 	}
+
 	for _, n in pairs(overlaps) do
-		if matches[n.clr] then
-			table.insert(matches[n.clr], n)
-		else
-			matchInfo:reset()
+		if not matches[n.clr] then
+			camera:resetZoom()
 			return
 		end
+		table.insert(matches[n.clr], n)
 	end
-
+	
 	local matchCount = math.min(#matches[matchInfo.leftColor],
-		#matches[matchInfo.rightColor])
+	#matches[matchInfo.rightColor])
 	for i = 1, matchCount do
 		local left = table.remove(matches[matchInfo.leftColor])
 		local right = table.remove(matches[matchInfo.rightColor])
 		left:fallInLove(right)
 	end
+	
+	matchInfo:reset()
 end
 
 function heart:update(dt)
@@ -109,7 +113,7 @@ player = {
 	angle = 0,
 	heart = heart,
 	matchInfo = matchInfo,
-	maxRad = love.graphics.getWidth() / 5,
+	maxRad = camera:getRealWidth() / 5,
 }
 
 function player:placeHeart()
@@ -118,6 +122,10 @@ end
 
 local p = love.keyboard.isDown
 function player:update(dt)
+	-- update max radius
+	self.maxRad = camera:getRealWidth() / 5
+	
+	-- control player animation and movement
 	local input = v2(btoi(p("d", "right")) - btoi(p("a", "left")),
 		btoi(p("s", "down")) - btoi(p("w", "up")))
 	if input.x < 0 then

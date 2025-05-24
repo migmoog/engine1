@@ -60,6 +60,10 @@ local function makeNpc(x, y)
         other.update = flyAway
     end
 
+    function npc:isDestroyable()
+        return self.matched and not self.body.pos:isOnScreen()
+    end
+
     -- walks onto the screen until it goes to dawdle mode
     function npc:born(dt)
         self.body:move(dt)
@@ -195,7 +199,7 @@ function npcs:update(dt)
     -- search for matched npcs and remove them from the pool
     for i = #self.pool, 1, -1 do
         local n = self.pool[i]
-        if n.matched and not n.body.pos:isOnScreen() then
+        if n:isDestroyable() then
             table.remove(self.pool, i)
         end
     end

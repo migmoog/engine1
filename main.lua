@@ -6,24 +6,27 @@ function love.load()
     require 'components.sprite'
     require 'components.timer'
 
+    require 'entities.camera'
     require 'entities.player'
     require 'entities.npc'
-    require 'entities.camera'
 
     npcs:setup()
     npcs.spawnTimer:start()
 
-    table.insert(camera.entities, player)
-    table.insert(camera.entities, npcs)
+    camera:addEntity(player)
+    camera:addEntity(npcs)
 end
 
 function love.update(dt)
     player:update(dt)
     npcs:update(dt)
+    camera:update(dt)
 end
 
 function love.draw()
     camera:draw()
+
+    -- might be unnecessary for workshop
     if inDebug and drawBodies then
         for _, b in pairs(allBodies) do
             b:draw()
