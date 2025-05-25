@@ -10,7 +10,7 @@ function love.load()
     require 'entities.player'
     require 'entities.npc'
 
-    npcs:setup()
+    npcs:setup(player.matchInfo)
     npcs.spawnTimer:start()
 
     camera:addEntity(player)

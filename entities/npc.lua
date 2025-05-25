@@ -25,7 +25,7 @@ end
 
 -- states for npcs
 local center = centerPos()
-local function makeNpc(x, y)
+local function makeNpc(x, y, clr)
     local anim_counter = 0
     -- fix the offset
     local npc = {
@@ -33,7 +33,7 @@ local function makeNpc(x, y)
         sprite = makeSprite('images/man.png', 8, 1),
         speed = love.math.random(85, 175),
         matched = false,
-        clr = love.math.random(1, 3)
+        clr = clr ~= nil and clr or love.math.random(1, 3)
     }
     npc.sprite.off.y = npc.sprite.off.y * 2
 
@@ -61,7 +61,7 @@ local function makeNpc(x, y)
     end
 
     function npc:isDestroyable()
-        return self.matched and not self.body.pos:isOnScreen()
+        return not self.body.pos:isOnScreen() and (self.matched or self.update == self.leave)
     end
 
     -- walks onto the screen until it goes to dawdle mode
@@ -154,7 +154,7 @@ npcs = {
     pool = {}
 }
 npcs.spawnTimer = makeTimer(3, function(ctx)
-    local w, h = love.graphics.getDimensions()
+    local w, h = camera:getRealSize()
     local pos = centerPos()
 
     -- Direction and position presets for each side
@@ -176,21 +176,35 @@ npcs.spawnTimer = makeTimer(3, function(ctx)
     ctx.spawnTimer:start(randfRange(3, 4.5))
 end, npcs)
 
-function npcs:make(x, y)
+function npcs:make(x, y, clr)
     if not x or not y then
         local p = randomScreenPos()
         x, y = p.x, p.y
     end
-    local n = makeNpc(x, y)
+    local n = makeNpc(x, y, clr)
     table.insert(self.pool, n)
     return n
 end
 
-function npcs:setup()
-    -- set up an inital pool of npcs at random positions within the bounds
-    for i = 1, 10 do
+function npcs:setup(matchInfo)
+    -- set up an initial pool of npcs at random positions within the bounds
+    -- ensure at least half of the spawned npcs are matchable if matchInfo is provided
+    local total = 10
+    local matchable = 0
+    local matchCount = matchInfo and #matchInfo or 0
+    local minMatchable = math.floor(total / 2)
+
+    for i = 1, total do
         local p = randomScreenPos()
-        self:make(p.x, p.y)
+        local clr = nil
+
+        -- Assign matchable npcs first if matchInfo is provided
+        if matchInfo and matchable < math.min(minMatchable, matchCount) then
+            clr = matchInfo[matchable + 1]
+            matchable = matchable + 1
+        end
+
+        self:make(p.x, p.y, clr)
     end
 end
 
