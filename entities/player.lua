@@ -67,6 +67,8 @@ function heart:deactivate(matchInfo, overlaps)
 	for _, n in pairs(overlaps) do
 		if not matches[n.clr] then
 			camera:resetZoom()
+			score:reset()
+			matchInfo:reset()
 			return
 		end
 		table.insert(matches[n.clr], n)
@@ -79,7 +81,8 @@ function heart:deactivate(matchInfo, overlaps)
 		local right = table.remove(matches[matchInfo.rightColor])
 		left:fallInLove(right)
 	end
-	
+
+	score:addMatches(matchCount)
 	matchInfo:reset()
 end
 

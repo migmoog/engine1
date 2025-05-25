@@ -6,6 +6,7 @@ function love.load()
     require 'components.sprite'
     require 'components.timer'
 
+    require 'entities.score'
     require 'entities.camera'
     require 'entities.player'
     require 'entities.npc'
@@ -34,4 +35,5 @@ function love.draw()
     end
 
     matchInfo:draw()
+    score:draw()
 end
