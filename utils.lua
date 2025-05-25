@@ -23,6 +23,16 @@ local vector2MT = {
     end,
 }
 
+local function getDims()
+    local w, h
+    if camera then
+        w, h = camera:getRealSize()
+    else
+        w, h = love.graphics.getDimensions()
+    end
+    return w, h
+end
+
 -- vector2 object. You will never go without these in a 2D game
 function v2(x, y)
     local out = {
@@ -68,7 +78,7 @@ function v2(x, y)
 
         -- check if this vector is on screen
         isOnScreen = function(self)
-            local w, h = love.graphics.getDimensions()
+            local w, h=getDims()
             return self.x >= 0 and self.x <= w and self.y >= 0 and self.y <= h
         end,
     }
@@ -79,7 +89,7 @@ end
 
 -- random vector2 generation
 function randomScreenPos()
-    local w, h = love.graphics.getDimensions()
+    local w, h = getDims()
     return v2(love.math.random(0, w), love.math.random(0, h))
 end
 

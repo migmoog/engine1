@@ -185,7 +185,7 @@ function player:update(dt)
 	end
 
 
-	local w, h = love.graphics.getDimensions()
+	local w, h = camera:getRealSize()
 	if self.body.pos.x < 0 then
 		self.body.pos.x = 0
 	elseif self.body.pos.x > w then

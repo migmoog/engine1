@@ -83,8 +83,9 @@ local function makeNpc(x, y, clr)
             self.moveTimer:update(dt)
         end
 
+        local maxSize = camera:getRealWidth()
         for _, axis in ipairs({ "x", "y" }) do
-            if self.body.pos[axis] > 720 or self.body.pos[axis] < 0 then
+            if self.body.pos[axis] > maxSize or self.body.pos[axis] < 0 then
                 self.body.velocity[axis] = -self.body.velocity[axis]
                 self.dir = directions:indexOf(self.body.velocity:signs())
                 self.body.pos = self.body.pos + directions:get(self.dir)
@@ -171,7 +172,8 @@ npcs.spawnTimer = makeTimer(3, function(ctx)
     pos[s.axis] = s.value
     pos[s.offsetAxis] = pos[s.offsetAxis] + randfRange(-s.spread, s.spread)
 
-    local n = ctx:make(pos.x, pos.y)
+    local clr = ({matchInfo.leftColor, matchInfo.rightColor})[love.math.random(1, 2)]
+    local n = ctx:make(pos.x, pos.y, clr)
     n:setDir(s.dir)
     ctx.spawnTimer:start(randfRange(3, 4.5))
 end, npcs)
