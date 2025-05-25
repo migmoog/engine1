@@ -62,8 +62,6 @@ function heart:deactivate(matchInfo, overlaps)
 		return
 	end
 
-	camera:zoomOut()
-
 	local matches = {
 		[matchInfo.leftColor] = {},
 		[matchInfo.rightColor] = {},
@@ -74,6 +72,7 @@ function heart:deactivate(matchInfo, overlaps)
 			camera:resetZoom()
 			score:reset()
 			matchInfo:reset()
+			npcs:resetSpawnRate()
 			return
 		end
 		table.insert(matches[n.clr], n)
@@ -89,6 +88,8 @@ function heart:deactivate(matchInfo, overlaps)
 
 	score:addMatches(matchCount)
 	self.sounds.match:play()
+	camera:zoomOut()
+	npcs:incSpawnRate()
 	matchInfo:reset()
 end
 

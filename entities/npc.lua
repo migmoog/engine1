@@ -154,6 +154,7 @@ end
 npcs = {
     pool = {}
 }
+local spawnRange = 3
 npcs.spawnTimer = makeTimer(3, function(ctx)
     local w, h = camera:getRealSize()
     local pos = centerPos()
@@ -175,7 +176,7 @@ npcs.spawnTimer = makeTimer(3, function(ctx)
     local clr = ({matchInfo.leftColor, matchInfo.rightColor})[love.math.random(1, 2)]
     local n = ctx:make(pos.x, pos.y, clr)
     n:setDir(s.dir)
-    ctx.spawnTimer:start(randfRange(3, 4.5))
+    ctx.spawnTimer:start(randfRange(spawnRange, spawnRange * 1.5))
 end, npcs)
 
 function npcs:make(x, y, clr)
@@ -233,6 +234,14 @@ function npcs:findOverlaps(body)
         end
     end
     return overlaps
+end
+
+function npcs:incSpawnRate()
+    spawnRange = math.max(spawnRange - 0.5, 1.5)
+end
+
+function npcs:resetSpawnRate()
+    spawnRange = 3
 end
 
 function npcs:draw()
