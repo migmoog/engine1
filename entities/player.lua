@@ -42,6 +42,10 @@ local heart = {
 	body = makeBody(center.x, center.y, 8),
 	sprite = makeSprite('images/grossheart.png', 1, 1),
 	active = false,
+	sounds = {
+		match = love.audio.newSource("sfx/success.mp3", "static"),
+		place = love.audio.newSource("sfx/Splat.mp3", "static")
+	}
 }
 local animTime = 0
 local w, h = heart.sprite:getDimensions()
@@ -49,6 +53,7 @@ local diagonal = math.sqrt(w * w + h * h)
 function heart:activate(vec)
 	self.active = true
 	self.body.pos = vec
+	self.sounds.place:play()
 end
 
 function heart:deactivate(matchInfo, overlaps)
@@ -83,6 +88,7 @@ function heart:deactivate(matchInfo, overlaps)
 	end
 
 	score:addMatches(matchCount)
+	self.sounds.match:play()
 	matchInfo:reset()
 end
 
