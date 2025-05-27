@@ -8,8 +8,12 @@ if arg[2] == "debug" then
     inDebug = true
 end
 
-if inDebug and arg[3] == "drawBodies" then
-    drawBodies = true
+for i=1, #arg do
+    if arg[i] == "drawBodies" then
+        drawBodies = true
+    elseif arg[i] == 'gif' then 
+        waitForRecord = true
+    end
 end
 
 local eh = love.errorhandler

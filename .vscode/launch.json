@@ -28,6 +28,19 @@
                 "debug",
                 "drawBodies"
             ]
+        },
+        {
+            "name": "Gif Record Mode",
+            "type": "lua-local",
+            "request": "launch",
+            "program": {
+                "command": "love"
+            },
+            "args": [
+                ".",
+                "debug",
+                "gif"
+            ]
         }
     ]
 }

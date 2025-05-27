@@ -19,6 +19,14 @@ function love.load()
 end
 
 function love.update(dt)
+    if waitForRecord then
+        if love.keyboard.isDown('r') then
+            waitForRecord = false
+        else
+            return
+        end
+    end
+
     player:update(dt)
     npcs:update(dt)
     camera:update(dt)
